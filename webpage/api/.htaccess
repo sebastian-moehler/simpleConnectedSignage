@@ -1,0 +1,4 @@
+AuthName Config
+AuthType Basic
+AuthUserFile /var/www/html/signage/api/.htpasswd
+Require valid-user
