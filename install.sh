@@ -3,7 +3,8 @@
 # installs neccessary software
 
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
-    echo "Not running as root"
+    echo "Not running as root. Use"
+    echo "sudo $0"
     exit
 fi
 
