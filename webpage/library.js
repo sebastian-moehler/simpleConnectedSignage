@@ -105,6 +105,7 @@ function getConfig(url = "", startRun = false, depth = 0) {
     
         // Examine the text in the response
         response.json().then(function(data) {
+            // TODO what if answer is empty?
             if(url == ""){
                 localConfig = configObj.getFromResult(data);
                 config = localConfig;

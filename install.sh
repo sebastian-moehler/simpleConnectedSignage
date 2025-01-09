@@ -22,7 +22,13 @@ mkdir -p /var/www/html/signage/
 cp -R webpage/* /var/www/html/signage/
 # there's no need for apache to be able to write to the files - excluding the upload folder and the config file.
 sudo chown -R www-data:www-data /var/www/html/signage/img
-touch /var/www/html/signage/list.json
+# do not overwrite config file if it exists
+if [ ! -s "/var/www/html/signage/list.json"]; then
+    cp list.json /var/www/html/signage/
+    # give a list of the ips the pi has
+    sed -i "s|IPTEMPLATE|$(hostname -I | sed "s|^|http://|; s|\s*$|/signage/api<br/>|")|" /var/www/html/signage/
+fi
+
 sudo chown  www-data:www-data /var/www/html/signage/list.json
 
 echo "### updating config files"
@@ -32,7 +38,7 @@ sed -i 's/^.*upload_max_filesize *=.*$/upload_max_filesize = 20M/i' /etc/php/8.*
 sed -Ei 's/^(\s*AllowOverride )None\s*$/\1All/i' /etc/apache2/apache2.conf
 
 # guess the user name
-$name=$(ls /home | head -n 1)
+name=$(ls /home | head -n 1)
 # Create a desktop shortcut
 printf "[Desktop Entry]\nName=Signage\nExec=chromium-browser http://localhost/signage --kiosk --noerrdialogs --disable-infobars --no-first-run --start-maximized\nTerminal=false\nType=Application\n" > "/home/$name/Desktop/signage.desktop"
 
