@@ -45,4 +45,5 @@ printf "[Desktop Entry]\nName=Signage\nExec=chromium-browser http://localhost/si
 
 sudo cp "/home/$name/Desktop/signage.desktop" /etc/xdg/autostart/
 
+echo "### done. Please reboot."
 
