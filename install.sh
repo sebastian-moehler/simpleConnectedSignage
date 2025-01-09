@@ -23,7 +23,7 @@ cp -R webpage/* /var/www/html/signage/
 # there's no need for apache to be able to write to the files - excluding the upload folder and the config file.
 sudo chown -R www-data:www-data /var/www/html/signage/img
 # do not overwrite config file if it exists
-if [ ! -s "/var/www/html/signage/list.json"]; then
+if [ ! -s "/var/www/html/signage/list.json" ]; then
     cp list.json /var/www/html/signage/
     # give a list of the ips the pi has
     sed -i "s|IPTEMPLATE|$(hostname -I | sed "s|^|http://|; s|\s*$|/signage/api<br/>|")|" /var/www/html/signage/
