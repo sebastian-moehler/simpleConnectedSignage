@@ -105,7 +105,12 @@
 
             <form action="index.php" method="post">
                 <?php foreach($settings['data'] as $nr => $slide): ?>
-                    <div class="mb-3 p-2 slide">
+                    <div class="mb-5 p-2 slide">
+                        <div class="row"> 
+                            <div class="col-md-12 mb-1">
+                                <h4>#<?= $nr+1 ?></h4>
+                            </div>
+                        </div>
                         <div class="row"> 
                             <div class="col-md-2 mb-1">
                                 <label for="data_<?= $nr ?>_typ">slide Type</label>
@@ -117,7 +122,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3 mb-1">
-                                <label for="data_<?= $nr ?>_duration">duration [s] <span class="text-muted">(-1 for default; 0 for delete)</span></label>
+                                <label for="data_<?= $nr ?>_duration">duration [s] <span class="text-muted">(-1 for default)</span></label>
                                 <input type="number" min="-1" class="form-control" id="data_<?= $nr ?>_duration" name="data_<?= $nr ?>_duration" placeholder="-1" value="<?= $slide['duration'] ?? -1 ?>">
                             </div>
                             <div class="col-md-3 mb-1">
@@ -127,6 +132,10 @@
                             <div class="col-md-3 mb-1">
                                 <label for="data_<?= $nr ?>_to">show until <span class="text-muted">(empty for no restriction)</span></label>
                                 <input type="date" class="form-control" id="data_<?= $nr ?>_to" name="data_<?= $nr ?>_to" value="<?= $slide['to'] ?? "" ?>">
+                            </div>
+                            <div class="col-md-1 mb-1">
+                                <label for="data_<?= $nr ?>_delete">delete</label><br>
+                                <input type="checkbox" class="mt-2" id="data_<?= $nr ?>_delete" name="data_<?= $nr ?>_delete" <?= $slide['delete'] ? "checked" : "" ?>>
                             </div>
                         </div>
                         <div class="row">

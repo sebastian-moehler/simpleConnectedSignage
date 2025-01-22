@@ -28,7 +28,9 @@
     function write() {
         global $settings;
 
-        $settings['data'] = array_filter($settings['data'], function($d) {return ($d['duration'] ?? 15) != 0;});
+        // filter out the deleted entries
+        $settings['data'] = array_filter($settings['data'], function($d) {return ! $d['delete'];});
+
         $settings['ok-message'] = "";   // may contain internal information...
         $settings['fail-message'] = "";
 
@@ -59,20 +61,24 @@
     /**
      * default structure of slides
      */
-    function getDefaultSlide($content = "", $duration = null){
+    function getDefaultSlide($content = "", $duration = null, $delete = false){
         return array(
             "type" => "text",   // text, html, img, url
             "content" => $content, // text -> text; img, url -> absolute path including http://
             "duration" => $duration, // null - default, else duration in seconds
             "from" => null,     // if set: do not show before
             "to" => null,       // if set: do not show after
+            "delete" => $delete   // if set to true: delete on next write
         );
     }
 
+    /**
+     * adds a placeholder slide
+     */
     function addTemplate() {
         global $settings;
         
-        $settings['data'][] = getDefaultSlide("new entry", 0);
+        $settings['data'][] = getDefaultSlide("new entry", -1, true);
     }
 
     /**
@@ -141,6 +147,9 @@
                         case 'duration':
                             $slides[$index][$parts[2]] = !is_numeric($changes[$key]) || intval($changes[$key]) < 0 ? null : intval($changes[$key]);
                             break;
+                        case 'delete':
+                            $slides[$index][$parts[2]] = $changes[$key] == "on";    // field gets ommited if not checked - so we need to only check for "on"
+                            break;
                         default:
                             $slides[$index][$parts[2]] = empty($changes[$key]) ? null : $changes[$key];
                             break;
@@ -151,14 +160,14 @@
 
         }
 
-        // we do not need to concern ourselves with deleting entries with duration = 0 - we call write() immediately after that, it happens there
+        // we do not need to concern ourselves with deleting entries - we call write() immediately after that, it happens there
         return $slides;
     }
 
     /**
      * handles image uploads
      */
-    function handleImageUpload($changes) {
+    function handleImageUpload() {
         global $settings;
         // based on https://www.w3schools.com/php/php_file_upload.asp
 
@@ -175,7 +184,6 @@
         $target_file = $target_dir . $filename;
 
         $uploadOk = 1;
-        $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
         // Check if image file is a actual image or fake image
         $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
@@ -222,7 +230,7 @@
         $files = scandir($dir);
         foreach ($files as $file) {
             $filePath = $dir . '/' . $file;
-            if (is_file($filePath)) {
+            if (! str_starts_with($file, ".git") && is_file($filePath)) {
                 $list[] = $file;
             }
         }
